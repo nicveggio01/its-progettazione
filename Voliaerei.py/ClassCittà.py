@@ -1,6 +1,7 @@
 from custom_types import RealGEZ
 from ClassNazione import Nazione
 from ClassCompagnia import Compagnia
+from ClassAereoporto import Aereoporto
 from typing import List
 
 class Città:
@@ -9,13 +10,15 @@ class Città:
     _abitanti: RealGEZ
     _nazione: Nazione
     _compagnia:List[Compagnia]
+    _aereoporto: List[Aereoporto]
 
-    def _init__(self, nome:str, abitanti:RealGEZ, nazione:Nazione, )-> None:
+    def _init__(self, nome:str, abitanti:RealGEZ, nazione:Nazione )-> None:
 
         self.set_abitanti(abitanti)
         self._nome=nome
         self._nazione=nazione
         self._compagnia=[]
+        self._aereoporto=[]
 
     def get_nome(self)-> str:
         return self._nome
@@ -37,5 +40,14 @@ class Città:
     def rimuovi_compagnia(self, compagnia:Compagnia)-> None:
         if compagnia in self._compagnia:
             self._compagnia.remove(compagnia)
+    def get_aereoporto(self)-> Aereoporto:
+        return self._aereoporto
+    def aggiungi_aereoporto(self, aereoporto:Aereoporto)->None:
+        self._aereoporto.append(aereoporto)
+    def rimuovi_aereoporto(self, aereoporto:Aereoporto)-> None:
+        if aereoporto in self._aereoporto:
+            self._compagnia.remove(aereoporto)
+
+
     
 
