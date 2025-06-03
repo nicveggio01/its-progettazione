@@ -4,8 +4,8 @@ from custom_types import RealGEZ
 from ClassNazione import Nazione
 
 if TYPE_CHECKING:
-    from ClassAereoporto import Aereoporto # type ignore
-    from ClassCompagnia import Compagnia # type ignore
+    from ClassAereoporto import Aereoporto 
+    from ClassCompagnia import Compagnia 
 
 class Città:
 

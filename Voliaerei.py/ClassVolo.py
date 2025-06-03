@@ -3,8 +3,8 @@ from custom_types import RealGTZ
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ClassCompagnia import Compagnia  # type: ignore
-    from ClassAereoporto import Aereoporto  # type: ignore
+    from ClassCompagnia import Compagnia  
+    from ClassAereoporto import Aereoporto  
 
 class Volo:
 

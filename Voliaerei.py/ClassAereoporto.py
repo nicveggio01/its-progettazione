@@ -2,7 +2,7 @@
 from typing import List, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ClassVolo import Volo  # type: ignore
+    from ClassVolo import Volo  
 
 class Aereoporto:
 
