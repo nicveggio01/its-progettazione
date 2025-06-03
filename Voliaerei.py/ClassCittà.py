@@ -1,11 +1,11 @@
-from custom_types import RealGEZ
-from typing import List, TYPE_CHECKING
 
+from typing import List, TYPE_CHECKING
+from custom_types import RealGEZ
 from ClassNazione import Nazione
-from ClassAereoporto import Aereoporto
 
 if TYPE_CHECKING:
-    from ClassCompagnia import Compagnia
+    from ClassAereoporto import Aereoporto # type ignore
+    from ClassCompagnia import Compagnia # type ignore
 
 class Città:
 
@@ -13,7 +13,7 @@ class Città:
     _abitanti: RealGEZ
     _nazione: Nazione
     _compagnia: List["Compagnia"]
-    _aereoporto: List[Aereoporto]
+    _aereoporto: List["Aereoporto"]
 
     def __init__(self, nome: str, abitanti: RealGEZ, nazione: Nazione) -> None:
         self.set_abitanti(abitanti)
@@ -52,5 +52,12 @@ class Città:
         if compagnia in self._compagnia:
             self._compagnia.remove(compagnia)
 
-    def get_aereoporto(self) -> List[Aereoporto]:
+    def get_aereoporto(self) -> List["Aereoporto"]:
         return self._aereoporto
+
+    def aggiungi_aereoporto(self, aereoporto: "Aereoporto") -> None:
+        self._aereoporto.append(aereoporto)
+
+    def rimuovi_aereoporto(self, aereoporto: "Aereoporto") -> None:
+        if aereoporto in self._aereoporto:
+            self._aereoporto.remove(aereoporto)
