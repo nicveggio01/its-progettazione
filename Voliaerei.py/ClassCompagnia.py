@@ -1,12 +1,16 @@
 
 from custom_types import RealGTZ
-from typing import List
+from typing import List, TYPE_CHECKING
 from ClassCittà import Città
+
+if TYPE_CHECKING:
+    from ClassVolo import Volo
 
 class Compagnia:
 
     _nome: str
     _anno: RealGTZ
+    _voli: List["Volo"]
     _citta: Città
 
     def __init__(self, nome: str, anno: RealGTZ) -> None:
@@ -14,6 +18,7 @@ class Compagnia:
         if anno <= 1900:
             raise ValueError("L'anno deve essere maggiore di 1900.")
         self._anno = anno
+        self._voli = []
         self._citta = None
 
     def get_nome(self) -> str:
@@ -24,6 +29,16 @@ class Compagnia:
 
     def get_anno(self) -> RealGTZ:
         return self._anno
+
+    def aggiungi_volo(self, volo: "Volo") -> None:
+        self._voli.append(volo)
+
+    def get_volo(self) -> List["Volo"]:
+        return self._voli
+
+    def rimuovi_volo(self, volo: "Volo") -> None:
+        if volo in self._voli:
+            self._voli.remove(volo)
 
     def set_citta(self, citta: Città) -> None:
         self._citta = citta
