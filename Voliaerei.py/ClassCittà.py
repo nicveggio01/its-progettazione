@@ -12,7 +12,7 @@ class Città:
     _compagnia:List[Compagnia]
     _aereoporto: List[Aereoporto]
 
-    def _init__(self, nome:str, abitanti:RealGEZ, nazione:Nazione )-> None:
+    def __init__(self, nome:str, abitanti:RealGEZ, nazione:Nazione )-> None:
 
         self.set_abitanti(abitanti)
         self._nome=nome
