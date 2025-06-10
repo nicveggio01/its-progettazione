@@ -1,8 +1,10 @@
 
 from custom_types import RealGTZ
 from custom_types import CodiceFiscale
+from custom_types import Matricola
 from datetime import date
 from Corsi import Corsi
+
 
 class Studenti:
 
@@ -10,12 +12,12 @@ class Studenti:
     _codice_fiscale:CodiceFiscale
     _anno_iscr: RealGTZ
     _data_nascita:date
-    _numero_matricola: RealGTZ
+    _numero_matricola: Matricola
     _corsi_superati=dict[Corsi, RealGTZ]
     _voto:RealGTZ
     _iscritto:Corsi
 
-    def __init__(self, nome:str, codice_fiscale: CodiceFiscale, data_nascita:date, anno_iscr:RealGTZ, numero_matricola:RealGTZ, corsi_superati:dict[Corsi, RealGTZ], voto:RealGTZ, iscritto:Corsi):
+    def __init__(self, nome:str, codice_fiscale: CodiceFiscale, data_nascita:date, anno_iscr:RealGTZ, numero_matricola:Matricola, corsi_superati:dict[Corsi, RealGTZ], voto:RealGTZ, iscritto:Corsi):
 
         self._nome=nome
         self._codice_fiscale=codice_fiscale
@@ -36,7 +38,7 @@ class Studenti:
     def get_codice_fiscale(self)-> CodiceFiscale:
         return self._codice_fiscale
     
-    def get_numero_matricola(self)->RealGTZ:
+    def get_numero_matricola(self)->Matricola:
         return self._numero_matricola
     
     def get_data_nascita(self)-> date:

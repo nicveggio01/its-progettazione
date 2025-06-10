@@ -43,6 +43,17 @@ class CodiceFiscale:
 
     def is_valid(self):
         return self._valida_codice(self.codice)
+    
+class Matricola(int):
+    def __new__(cls, value):
+        if not isinstance(value, int):
+            raise TypeError("La matricola deve essere un intero.")
+        if value <= 0:
+            raise ValueError("La matricola deve essere un numero positivo.")
+        if len(str(value)) < 6:
+            raise ValueError("La matricola deve avere almeno 6 cifre.")
+        return int.__new__(cls, value)
+
 
 
 
