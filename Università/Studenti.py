@@ -4,6 +4,7 @@ from custom_types import CodiceFiscale
 from custom_types import Matricola
 from datetime import date
 from Corsi import Corsi
+from Città import Città
 
 
 class Studenti:
@@ -16,8 +17,9 @@ class Studenti:
     _corsi_superati=dict[Corsi, RealGTZ]
     _voto:RealGTZ
     _iscritto:Corsi
+    _città:Città
 
-    def __init__(self, nome:str, codice_fiscale: CodiceFiscale, data_nascita:date, anno_iscr:RealGTZ, numero_matricola:Matricola, corsi_superati:dict[Corsi, RealGTZ], voto:RealGTZ, iscritto:Corsi):
+    def __init__(self, nome:str, codice_fiscale: CodiceFiscale, data_nascita:date, anno_iscr:RealGTZ, numero_matricola:Matricola, corsi_superati:dict[Corsi, RealGTZ], voto:RealGTZ, iscritto:Corsi, città:Città):
 
         self._nome=nome
         self._codice_fiscale=codice_fiscale
@@ -27,6 +29,7 @@ class Studenti:
         self._corsi_superati=  {}
         self._voto= voto
         self.set_iscritto(iscritto)
+        self._città=città
 
     
     def get_nome(self)-> str:
@@ -72,6 +75,11 @@ class Studenti:
 
     def set_iscritto(self, iscritto:Corsi)-> None:
         self._iscritto=iscritto
-
+    
+    def get_città(self)->Città:
+        return self._città
+    
+    def set_città(self, nuova_città):
+        self._città= nuova_città
     
 

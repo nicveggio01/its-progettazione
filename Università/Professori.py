@@ -2,6 +2,7 @@
 from datetime import date
 from custom_types import CodiceFiscale
 from Corsi import Corsi
+from Città import Città
 
 class Professori:
     
@@ -9,13 +10,15 @@ class Professori:
     _codice_fiscale:CodiceFiscale
     _data_nascita:date
     _insegna: Corsi
+    _città:Città
 
-    def __init__(self, nome:str, codice_fiscale:CodiceFiscale, data_nascita:date, insegna:Corsi):
+    def __init__(self, nome:str, codice_fiscale:CodiceFiscale, data_nascita:date, insegna:Corsi, città:Città):
 
         self._nome=nome
         self._codice_fiscale=codice_fiscale
         self._data_nascita=data_nascita
         self.set_insegna(insegna)
+        self._città=città
 
     
     def get_nome(self)-> str:
@@ -34,3 +37,9 @@ class Professori:
         return self._insegna
     def set_insegna(self, insegna:Corsi)-> None:
         self._insegna=insegna
+    
+    def get_città(self)->Città:
+        return self._città
+    
+    def set_città(self, nuova_città):
+        self._città= nuova_città
