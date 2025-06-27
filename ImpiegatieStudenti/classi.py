@@ -1,3 +1,4 @@
+
 from __future__ import annotations
 from custom_types import *
 
@@ -66,7 +67,7 @@ class Persona:
 
 class Impiegato(Persona):
 
-    def __init__(self, *, nome, cognome, cf, genere, maternita=None, stipendio: RealGEZ, ruolo: Ruolo, is_responsabile: bool, posizione_mil:PosizioneMilitare):
+    def __init__(self, *, nome, cognome, cf, genere, maternita=None, stipendio: RealGEZ, ruolo: Ruolo, is_responsabile: bool, posizione_mil:PosizioneMilitare, responsabili:list[Impiegato]=[]):
         super().__init__(
             nome=nome,
             cognome=cognome,
@@ -82,6 +83,7 @@ class Impiegato(Persona):
         self._stipendio = stipendio
         self._ruolo = ruolo
         self._is_responsabile = is_responsabile
+        self._responsabili=responsabili
 
         if ruolo == Ruolo.progettista:
             if is_responsabile:
@@ -100,7 +102,7 @@ class Impiegato(Persona):
 
 
 
-    def getRuolo(self) -> Ruolo:
+    def getRuolo(self) -> str:
         return f" Il ruolo dell'impiegato è {self._ruolo}"
     
     def getResponsabile(self):
@@ -134,53 +136,61 @@ class Impiegato(Persona):
     def set_stipendio(self, nuovo_stipendio:RealGEZ)->None:
         self._stipendio=nuovo_stipendio
 
+    def get_responsabili(self)->list[Impiegato]:
+        return self._responsabili
+    
+    def aggiungi_responsabile(self, nuovo_resp:Impiegato)->None:
+        if self._is_responsabile:
+            if nuovo_resp not in self._responsabili:
+                self._responsabili.append(nuovo_resp)
+            else:
+                print(f"{nuovo_resp._nome}  {nuovo_resp._cognome} già nella lista dei responsabili")
+        else:
+            raise ValueError(f"Impossibile aggiungere l'impiegato{nuovo_resp._nome} {nuovo_resp._cognome}\n ---> Non è responsabile! ")
+
+    def rimuovi_responsabile(self, resp:Impiegato)->None:
+        if resp in self._responsabili:
+            self._responsabili.remove(resp)
+        else:
+            print(f"{resp._nome} {resp._cognome} già rimosso oppure non si trova nella lista dei responsabili")
+
 
 class Studente(Persona):
 
     _matricola:RealGTZ
     def __init__(self, *, nome, cognome, cf, genere, maternita = None, matricola:RealGTZ):
         super().__init__(nome=nome, cognome=cognome, cf=cf, genere=genere, maternita=maternita, is_studente=True, is_impiegato=False, posizione_mil=None)
-        self._matricola=matricola
-
-        if self._is_studente and not self._is_impiegato:
-            print("La persona è uno studente")
-        elif self._is_impiegato and not self._is_studente:
-            raise ValueError("Una persona non può diventare studente o impiegato e viceversa.")
+        
+        if matricola is None:
+            raise ValueError("Errore la matricola è obbligatoria peruno studente.")
         else:
-            print("La persona non è ne uno studente ne un impiegato.")
+            self._matricola=matricola
 
 
     def getMatricola(self)->RealGTZ:
         return self._matricola
     
-
 class Progetto:
-    
     _nome:str
 
-    def __init__(self, nome:str):
+    def __init__(self, nome:str, is_responsabile:bool, nome_responsabile:Impiegato):
         self._nome = nome
+        self._is_responsabile= is_responsabile
+        self._nome_responsabile= nome_responsabile._nome
 
-class Responsabili:
-
-    _responsabili:list[Impiegato]=[]
-
-    def __init__(self, responsabili:list[Impiegato]):
-        self._responsabili=responsabili
-
-    def get_responsabili(self)->list[Impiegato]:
-        return self._responsabili
-    def aggiungi_responsabile(self, nuovo_resp:Impiegato)->None:
-        if nuovo_resp not in self._responsabili:
-            self._responsabili.append(nuovo_resp)
-        else:
-            print(f"{nuovo_resp._nome}  {nuovo_resp._cognome} già nella lista dei responsabili")
-    def rimuovi_responsabile(self, resp:Impiegato)->None:
-        if resp in self._responsabili:
-            self._responsabili.remove(resp)
-        else:
-            print(f"{resp._nome} {resp._cognome} già rimosso oppure non si trova nella lista dei responsabili")
+    def get_nome(self)->str:
+        return self._nome
     
+    def registro(self, registro:dict[Progetto, Impiegato]):
+
+        self._registro=registro
+        if self._is_responsabile:
+            registro[self._nome]=self._nome_responsabile
+        else:
+            raise ValueError("Errore impossibile aggiungere l'impiegato al registro in quanto non è responsabile")
+        
+            
+
 
 class PosizioneMilitare:
     _nome:str #immutabile
@@ -204,8 +214,8 @@ imp= Impiegato(
 
 print(imp.getRuolo())
 print(imp.get_stipendio())
-
-
+# imp.diventaDirettore()
+# print(imp.getRuolo())
 
 
 
