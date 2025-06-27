@@ -2,6 +2,7 @@ from __future__ import annotations
 from custom_types import *
 
 
+
 class Persona:
     _nome: str
     _cognome: str
