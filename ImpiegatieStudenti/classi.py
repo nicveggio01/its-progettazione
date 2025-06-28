@@ -1,7 +1,7 @@
 
 from __future__ import annotations
 from custom_types import *
-
+from frozendict import frozendict
 
 
 class Persona:
@@ -34,7 +34,7 @@ class Persona:
         if genere == Genere.donna:
             if maternita is None:
                 raise ValueError("È obbligatorio fornire il numero di maternità per le donne")
-            self.diventa_donna(maternita)
+            self._maternita=maternita
         if is_studente and is_impiegato:
             raise ValueError("Una persona non può essere sia studente che impiegato.")
 
@@ -83,22 +83,23 @@ class Impiegato(Persona):
         self._stipendio = stipendio
         self._ruolo = ruolo
         self._is_responsabile = is_responsabile
-        self._responsabili=responsabili
+        
 
-        if ruolo == Ruolo.progettista:
-            if is_responsabile:
-                print("L'impiegato partecipa al progetto come responsabile.")
+        if is_responsabile:
+            if ruolo != Ruolo.progettista:
+                raise ValueError("Solo un progettista può essere responsabile di un progetto.")
             else:
-                print("L'impiegato non è il responsabile del progetto.")
+                print(f"L'impiegato {self._nome} {self._cognome} partecipa al progetto come responsabile.")
         else:
-            raise ValueError("L'impiegato non è un progettista")
+            print(f"L'impiegato {self._nome} {self._cognome} non è il responsabile del progetto in quanto solo i progettisti responsabili possono.")
+
         
         if self._is_impiegato and not self._is_studente:
             print("La persona è un'impiegato")
         elif self.is_studente and not self._is_impiegato:
             raise ValueError("Una persona non può diventare studente o impiegato e viceversa.")
         else:
-            print("La persona non è ne uno studente ne un'impiegato")
+            print(f"La persona {self._nome} {self._cognome} non è ne uno studente ne un'impiegato")
 
 
 
@@ -132,29 +133,13 @@ class Impiegato(Persona):
         else:
             self._is_responsabile = False
     def get_stipendio(self)->RealGEZ:
-        return f"Lo stipendio netto ammonta a {self._stipendio} euro"
+        return f"Lo stipendio netto ammonta a {self._stipendio} euro per {self._nome} {self._cognome}"
     def set_stipendio(self, nuovo_stipendio:RealGEZ)->None:
         self._stipendio=nuovo_stipendio
+    def __repr__(self):
+        return f"{self._nome} {self._cognome}"
 
-    def get_responsabili(self)->list[Impiegato]:
-        return self._responsabili
     
-    def aggiungi_responsabile(self, nuovo_resp:Impiegato)->None:
-        if self._is_responsabile:
-            if nuovo_resp not in self._responsabili:
-                self._responsabili.append(nuovo_resp)
-            else:
-                print(f"{nuovo_resp._nome}  {nuovo_resp._cognome} già nella lista dei responsabili")
-        else:
-            raise ValueError(f"Impossibile aggiungere l'impiegato{nuovo_resp._nome} {nuovo_resp._cognome}\n ---> Non è responsabile! ")
-
-    def rimuovi_responsabile(self, resp:Impiegato)->None:
-        if resp in self._responsabili:
-            self._responsabili.remove(resp)
-        else:
-            print(f"{resp._nome} {resp._cognome} già rimosso oppure non si trova nella lista dei responsabili")
-
-
 class Studente(Persona):
 
     _matricola:RealGTZ
@@ -162,7 +147,7 @@ class Studente(Persona):
         super().__init__(nome=nome, cognome=cognome, cf=cf, genere=genere, maternita=maternita, is_studente=True, is_impiegato=False, posizione_mil=None)
         
         if matricola is None:
-            raise ValueError("Errore la matricola è obbligatoria peruno studente.")
+            raise ValueError("Errore la matricola è obbligatoria per uno studente.")
         else:
             self._matricola=matricola
 
@@ -173,25 +158,41 @@ class Studente(Persona):
 class Progetto:
     _nome:str
 
-    def __init__(self, nome:str, is_responsabile:bool, nome_responsabile:Impiegato):
+    def __init__(self, nome:str, is_responsabile:bool,nome_responsabile:Impiegato):
         self._nome = nome
         self._is_responsabile= is_responsabile
         self._nome_responsabile= nome_responsabile._nome
+        self._registri: dict[str,list[Impiegato]] = {}
+
+
+        if self._is_responsabile:
+              self._registri[self._nome] = [nome_responsabile]
+        else:
+            raise ValueError("Errore: l'impiegato non è responsabile!")
+
 
     def get_nome(self)->str:
         return self._nome
-    
-    def registro(self, registro:dict[Progetto, Impiegato]):
 
-        self._registro=registro
-        if self._is_responsabile:
-            registro[self._nome]=self._nome_responsabile
-        else:
-            raise ValueError("Errore impossibile aggiungere l'impiegato al registro in quanto non è responsabile")
+    
+    def registro(self, nuovo_responsabile:Persona):
+            
+            if not isinstance(nuovo_responsabile, Impiegato):
+                raise ValueError(f"Errore impossibile aggiungere la persona {nuovo_responsabile}  al progetto in quanto non è un impiegto.")
+            if not nuovo_responsabile.getResponsabile():
+                print(f"Impossibile aggiungere {nuovo_responsabile._nome} {nuovo_responsabile._cognome} alla lista responsabili.")
+                return
+            if self._nome not in self._registri:
+                self._registri[self._nome]=[]
+            if nuovo_responsabile not in self._registri[self._nome]:
+                self._registri[self._nome].append(nuovo_responsabile)
+    
+            
+    
+    def get_registri(self)->list:
+        return self._registri
         
             
-
-
 class PosizioneMilitare:
     _nome:str #immutabile
     def __init__(self, nome:str)->None:
@@ -212,10 +213,128 @@ imp= Impiegato(
     is_responsabile=True
 )
 
+
+imp2= Impiegato(
+
+    nome= "Domenico",
+    cognome="Candido",
+    cf=[CodiceFiscale("DCCNDN05R12C618X")],
+    genere= Genere.uomo,
+    posizione_mil=PosizioneMilitare("Riservista"),
+    stipendio= RealGEZ(3000),
+    ruolo=Ruolo.progettista,
+    is_responsabile= True
+
+)
+
+imp3=Impiegato(
+    nome="Sergio",
+    cognome= "De Guidi",
+    cf= [CodiceFiscale("SDGNDN04R12C420X")],
+    genere= Genere.uomo,
+    posizione_mil=PosizioneMilitare("Riservista"),
+    stipendio=RealGEZ(4000),
+    ruolo=Ruolo.progettista,
+    is_responsabile=False
+)
+
+imp4= Impiegato(
+    nome="Claudio",
+    cognome="Benigni",
+    cf= [CodiceFiscale("CBNNDN04R12C420X")],
+    genere= Genere.uomo,
+    posizione_mil=PosizioneMilitare("Riservista"),
+    stipendio=RealGEZ(2100),
+    ruolo= Ruolo.segretario,
+    is_responsabile=False
+)
+
+s1= Studente(
+    nome= "Anna",
+    cognome= "Pepe",
+    cf=[CodiceFiscale("APPAEP04R10C618Y")],
+    genere= Genere.donna,
+    maternita=RealGEZ(0),
+    matricola=  RealGEZ(37025)
+)
+
+pegaso= Progetto(
+    nome= "Pegaso",
+    is_responsabile=True,
+    nome_responsabile=imp
+)
+
+prometeo= Progetto(
+    nome= "Prometeo",
+    is_responsabile=True,
+    nome_responsabile=imp
+)
+
+
 print(imp.getRuolo())
 print(imp.get_stipendio())
-# imp.diventaDirettore()
-# print(imp.getRuolo())
+
+try:
+    imp2.diventaDirettore()
+except ValueError:
+    print(f"Errore, l'impiegato{imp2} non può diventare un direttore")
+
+try:
+    pegaso.registro(imp)
+    print(pegaso.get_registri())
+except ValueError:
+     print(f"Errore impiegato {imp} non valido per questo progetto, non è un progettista.")
+
+try:
+    pegaso.registro(imp2)
+    print(pegaso.get_registri())
+except ValueError:
+    print(f"Errore impiegato {imp2} non valido per questo progetto, non è un progettista.")
+try:
+    pegaso.registro(imp3)
+    print(pegaso.get_registri())
+except ValueError:
+    print(f"Errore impiegato {imp3} non valido per questo progetto, non è un progettista.")
+
+try:
+    pegaso.registro(imp4)
+    print(pegaso.get_registri())
+except ValueError:
+    print(f"Errore impiegato {imp4} non valido per questo progetto, non è un progettista.")
+
+try:
+    pegaso.registro(s1)
+    print(pegaso.get_registri())
+except ValueError:
+    print(f"Errore impossibile aggiungere lo studente {s1._nome} {s1._cognome} al progetto.")
+
+try:
+    imp4.diventaDirettore()
+    print(f"{imp4} è un nuovo direttore!")
+except ValueError:
+    print(f"Errore l'impiegato {imp4} non può divenatare direttore.")
+
+try:
+    imp3.diventaDirettore()
+    print(f"{imp3} è un nuovo direttore!")
+except ValueError:
+    print(f"Errore l'impiegato {imp3} non può diventare un direttore.")
+
+try:
+    prometeo.registro(imp)
+    print(prometeo.get_registri())
+except ValueError:
+    print(f"Errore impossibile aggiungere l'impiegato {imp} al progetto")
+
+
+
+
+
+
+
+
+
+
 
 
 
