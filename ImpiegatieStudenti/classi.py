@@ -156,17 +156,29 @@ class Studente(Persona):
         return self._matricola
     
 class Progetto:
+
     _nome:str
+    lista_progetti:list[Progetto]=[]
+    tutti_responsabili:set[Impiegato]=set()
+
 
     def __init__(self, nome:str, is_responsabile:bool,nome_responsabile:Impiegato):
         self._nome = nome
         self._is_responsabile= is_responsabile
         self._nome_responsabile= nome_responsabile._nome
-        self._registri: dict[str,list[Impiegato]] = {}
+        self._registri: dict[str, list[Impiegato]] = {}
+
+
 
 
         if self._is_responsabile:
+              if nome_responsabile in Progetto.tutti_responsabili:
+                print(f"Errore impossibile aggiungere {self._nome_responsabile} poichè è già responsabile di un progetto")
+                return
+
               self._registri[self._nome] = [nome_responsabile]
+              Progetto.tutti_responsabili.add(nome_responsabile)
+              Progetto.lista_progetti.append(self)
         else:
             raise ValueError("Errore: l'impiegato non è responsabile!")
 
@@ -182,13 +194,20 @@ class Progetto:
             if not nuovo_responsabile.getResponsabile():
                 print(f"Impossibile aggiungere {nuovo_responsabile._nome} {nuovo_responsabile._cognome} alla lista responsabili.")
                 return
-            if self._nome not in self._registri:
-                self._registri[self._nome]=[]
-            if nuovo_responsabile not in self._registri[self._nome]:
-                self._registri[self._nome].append(nuovo_responsabile)
-    
             
+            if nuovo_responsabile in Progetto.tutti_responsabili:
+                print(f"Errore impossibile aggiungere {nuovo_responsabile}, è già responsabile di un progetto.")
+                return
+            
+            if self._nome not in self._registri:
+                self._registri[self._nome] = []
+            self._registri[self._nome].append(nuovo_responsabile)
+            Progetto.tutti_responsabili.add(nuovo_responsabile)
+            Progetto.lista_progetti.append(self)
+            
+        
     
+
     def get_registri(self)->list:
         return self._registri
         
