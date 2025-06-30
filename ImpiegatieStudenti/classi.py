@@ -4,6 +4,7 @@ from custom_types import *
 from frozendict import frozendict
 
 
+
 class Persona:
     _nome: str
     _cognome: str
