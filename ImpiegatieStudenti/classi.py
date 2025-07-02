@@ -1,7 +1,7 @@
 
 from __future__ import annotations
 from custom_types import *
-from frozendict import frozendict
+import frozendict
 
 
 
